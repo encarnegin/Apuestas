@@ -1,0 +1,221 @@
+REM Projecto: Apuestas
+REM Creado: 13/01/2016 12:30:07
+REM
+REM ***** Código Fuente Principal *****
+REM
+
+
+REM Inicializar Variables
+dim equipo$(42)
+dim partido$(15)
+dim columna$(17)
+dim unos(14)
+dim equis(14)
+dim doses(14)
+dim sellar$(14)
+SET TEXT FONT "Arial"
+SET TEXT SIZE 14
+
+
+rem Dar de alta columnas
+for x=1 to 17
+read columna$(x)
+next x
+data "Historia","Clasificación","Quiniela 15","Mundo Deportivo","Iñigo","Gonzalo","Adrian","Frecuentes","Sistema 15","Porcentajes"
+data "Ultimo Año","Cuotas","Base","Probable","Posible","Dificil","Bomba"
+rem Dar de alta Equipos
+for x=1 to 42
+read equipo$(x)
+next x
+data "At.Madrid","Barcelona","R.Madrid","Villarreal","Celta","Eibar","Sevilla","At.Bilbao","Deportivo","Malaga","Valencia"
+data "Getafe","Espanyol","Real","Betis","Las Palmas","Granada","Sporting","Rayo","Levante"
+data "Alaves","Cordoba","Oviedo","Alcorcon","Osasuna","Leganes","Nastic","Lugo","Mirandes","Zaragoza","Elche","Ponferradina"
+data "Valladolid","Tenerife","Numancia","Albacete","Girona","Huesca","Mallorca","Almeria","Llagostera","Bilbao Ath"
+
+rem Presentamos los Equipos
+cls
+y=1
+for x=1 to 21
+set cursor 1,y
+linea$=str$(x)+"- "+equipo$(x)
+print linea$
+y=y+15
+next x
+y=1
+for x=22 to 42
+set cursor 80,y
+linea$=str$(x)+"- "+equipo$(x)
+print linea$
+y=y+15
+next x
+
+REM Preguntamos jornada
+for x= 1 to 15
+ink rgb(255,255,255),0
+text 1,340, "Partido "+str$(x)
+set cursor 1,356
+input "Número de Equipo 1 : ",equipo1
+set cursor 1,372
+input "Número de Equipo 2 : ",equipo2
+partido$(x) = equipo$(equipo1)+" - "+equipo$(equipo2)
+set text opaque
+text 1,340,"                                                       "
+text 1,356,"                                                         "
+text 1,372,"                                                        "
+next x
+
+rem Presentamos Jornada
+cls
+line 0,0,145,0
+line 0,0,0,270
+line 0,270,145,270
+line 145,0,145,270
+Line 0,17,145,17
+line 0,34,145,34
+line 0,52,145,52
+line 0,70,145,70
+line 0,88,145,88
+line 0,106,145,106
+line 0,124,145,124
+line 0,142,145,142
+line 0,160,145,160
+line 0,180,145,180
+line 0,198,145,198
+line 0,215,145,215
+line 0,233,145,233
+line 0,250,145,250
+y=1
+for x=1 to 15
+text 5,y,partido$(x)
+y=y+18
+next x
+
+rem Preguntamos resultados de varias columnas
+y=1
+a=0
+for col=1 to 17
+ink rgb(255,255,255),0
+text 1,400,upper$(columna$(col))
+for fila=1 to 14
+set cursor 155+a,y
+input resultado$
+gosub suma
+y=y+18
+next fila
+gosub pleno15
+a=a+25
+y=1
+set text opaque
+text 1,400,"                                                                     "
+next col
+
+rem columna aleatoria
+ink rgb(255,255,255),0
+text 1,400,"ALEATORIA"
+y=1
+for fila=1 to 14
+set cursor 155+a,y
+aleatorio=rnd(2)
+if aleatorio=0 then resultado$="1"
+if aleatorio=1 then resultado$="X"
+if aleatorio=2 then resultado$="2"
+gosub suma
+print resultado$
+y=y+18
+next fila
+ale1=rnd(3)
+ale2=rnd(3)
+if ale1=0 then goles1$="0"
+if ale1=1 then goles1$="1"
+if ale1=2 then goles1$="2"
+if ale1=3 then goles1$="M"
+if ale2=0 then goles2$="0"
+if ale2=1 then goles2$="1"
+if ale2=2 then goles2$="2"
+if ale2=3 then goles2$="M"
+text 155+a,y,goles1$+"-"+goles2$
+a=a+25
+set text opaque
+text 1,400,"                                                                     "
+
+
+rem Presentamos resultado final
+gosub calculo
+y=1
+ink rgb(255,255,255),0
+text 1,340,"QUINIELA PARA SELLAR"
+FOR X=1 TO 14
+set cursor 155+a,y
+print sellar$(x)
+y=y+18
+next x
+wait key
+END
+
+rem pleno al 15
+pleno15:
+ink rgb(255,255,255),0
+text 1,300,"Pleno al Quince : "
+set cursor 1,330
+input "Goles Equipo 1 : ",goles1
+set cursor 1,360
+input "Goles Equipo 2 : ",goles2
+if goles1>2 then goles1$="M" else goles1$=str$(goles1)
+if goles2>2 then goles2$="M" else goles2$=str$(goles2)
+text 155+a,y,goles1$+"-"+goles2$
+set text opaque
+text 1,300,"                                                               "
+text 1,330,"                                                               "
+text 1,360,"                                                               "
+return
+
+rem suma resultados
+suma:
+if upper$(resultado$)="1" then unos(fila)=unos(fila)+1
+if upper$(resultado$)="X" then equis(fila)=equis(fila)+1
+if upper$(resultado$)="2" then doses(fila)=doses(fila)+1
+if upper$(resultado$)="1X" or upper$(resultado$)="X1"
+unos(fila)=unos(fila)+1
+equis(fila)=equis(fila)+1
+endif
+if upper$(resultado$)="21" or upper$(resultado$)="21"
+unos(fila)=unos(fila)+1
+doses(fila)=doses(fila)+1
+endif
+if upper$(resultado$)="2X" or upper$(resultado$)="X2"
+doses(fila)=doses(fila)+1
+equis(fila)=equis(fila)+1
+endif
+if upper$(resultado$)="1X2" or upper$(resultado$)="12X" or upper$(resultado$)="X12" or upper$(resultado$)="X21" or upper$(resultado$)="21X" or upper$(resultado$)="2X1"
+unos(fila)=unos(fila)+1
+doses(fila)=doses(fila)+1
+equis(fila)=equis(fila)+1
+endif
+return
+
+Rem Calculo
+calculo:
+for z=1 to 14
+if unos(z)>equis(z) and unos(z)>doses(z) then calculo=1
+if doses(z)>equis(Z) and doses(z)>unos(z) then calculo=2
+if equis(z)>unos(z) and equis(z)>doses(z) then calculo=0
+if unos(z)>equis(z) and unos(z)=doses(z) then calculo=12
+if unos(z)>doses(z) and unos(z)=equis(z) then calculo=10
+if equis(z)>unos(z) and equis(z)=doses(z) then calculo=20
+if equis(z)>doses(z) and equis(z)=unos(z) then calculo=10
+if doses(z)>unos(z) and doses(z)=equis(z) then calculo=20
+if doses(z)>equis(z) and doses(z)=unos(z) then calculo=12
+if calculo=1 then sellar$(z)="1"
+if calculo=2 then sellar$(z)="2"
+if calculo=0 then sellar$(z)="X"
+if calculo=12 then sellar$(z)="12"
+if calculo=10 then sellar$(z)="1X"
+if calculo=20 then sellar$(z)="X2"
+next z
+return
+
+
+
+
+
+
